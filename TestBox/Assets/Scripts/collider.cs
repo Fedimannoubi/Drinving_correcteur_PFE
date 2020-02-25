@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class collider : MonoBehaviour
 {
@@ -12,12 +13,17 @@ public class collider : MonoBehaviour
     public Text yellowText;
     public Text greenText;
 
+    public int waitTime;
+    private Boolean safeToPass;
+
     private void Start()
     {
         //fill the score board
         redText.text = red.ToString();
         yellowText.text = yellow.ToString();
         greenText.text = green.ToString();
+
+        safeToPass=false;
     }
 
     void OnCollisionEnter(Collision collisionInfo)
@@ -27,6 +33,7 @@ public class collider : MonoBehaviour
 
     	//to get the tag of the object
     	switch (collisionInfo.collider.gameObject.tag){
+
     		case "Red":
     			print("Hiting a Red object");
     			red--;
@@ -44,7 +51,26 @@ public class collider : MonoBehaviour
     			green--;
                 Subtract(greenText,green);
                 break;
-    	}
+
+            case "WaitZone":
+                print("WaitZone");
+                StartCoroutine(ExampleCoroutine());
+                break;
+
+            case "StopLine":
+                print("StopLine");
+                if (!safeToPass)
+                {
+                    red--;
+                    Subtract(redText, red);
+                }
+                else
+                {
+                    safeToPass=false;
+                }
+                break;
+
+        }
 
     	//rest the scene
     	if ( (red < 1) || (yellow < 1) || (green < 1) ) 
@@ -56,5 +82,21 @@ public class collider : MonoBehaviour
     private void Subtract(Text givingText,int score)
     {
         givingText.text= (score).ToString();
+    }
+
+    IEnumerator ExampleCoroutine()
+    {
+        //Print the time of when the function is first called.
+        Debug.Log("Started timestamp");
+
+        //yield on a new YieldInstruction that waits for 5 seconds.
+        yield return new WaitForSeconds(waitTime);
+
+        //After we have waited 5 seconds print the time again.
+        Debug.Log("Finished timestamp");
+        if (gameObject.GetComponent<Rigidbody>().IsSleeping())
+        {
+            safeToPass = true;
+        }
     }
 }
