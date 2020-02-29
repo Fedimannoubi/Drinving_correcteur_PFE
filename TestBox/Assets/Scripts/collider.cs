@@ -13,7 +13,7 @@ public class collider : MonoBehaviour
     public Text yellowText;
     public Text greenText;
 
-    public int waitTime;
+    public float waitTime;
     private Boolean safeToPass;
 
     private void Start()
