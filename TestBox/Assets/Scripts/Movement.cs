@@ -7,11 +7,16 @@ public class Movement : MonoBehaviour
 {
     public float maxSpeed;
     public float rotateSpeed;
-    public float speed;
-    public float horizontalMove;
-    public float verticalMove;
-    public Joystick joystick;
     public Text speedText;
+    public Joystick joystick;
+    public float breaksForce;
+    //public bool enginStall = true;
+
+    private float speed;
+    private float horizontalMove;
+    private float verticalMove;
+    
+   
 
 
     private void Start()
@@ -24,17 +29,27 @@ public class Movement : MonoBehaviour
         //horizontalMove = Input.GetAxis("Horizontal");
         //verticalMove   = Input.GetAxis("Vertical");
 
-        verticalMove = joystick.Vertical * maxSpeed;
+        if (joystick.Vertical * maxSpeed  > verticalMove)
+        {
+            //acceleration speed and momentum
+            verticalMove = joystick.Vertical * maxSpeed;
+        }
+        else if ((joystick.Vertical<0) && (speed>=0))
+        {
+            //breaks
+            verticalMove -= -joystick.Vertical * breaksForce * Time.deltaTime;
+        }
+        
         horizontalMove = joystick.Horizontal * verticalMove * rotateSpeed;
 
 
         speed = verticalMove*10;
         speedText.text = speed.ToString("n2");
 
-        //acceleration
+        //acceleration action
         transform.Translate(0f,0f, verticalMove * Time.deltaTime);
 
-        //rotation
+        //rotation action
         transform.Rotate(0f, horizontalMove * Time.deltaTime,  0f);
     }
 }
