@@ -12,6 +12,7 @@ public class collider : MonoBehaviour
     public Text redText;
     public Text yellowText;
     public Text greenText;
+    public Text stopText;
 
     public float waitTime;
     private Boolean safeToPass;
@@ -67,6 +68,8 @@ public class collider : MonoBehaviour
                 else
                 {
                     safeToPass=false;
+                    stopText.text = "Stop";
+                    stopText.color = Color.red;
                 }
                 break;
 
@@ -97,6 +100,8 @@ public class collider : MonoBehaviour
         if (gameObject.GetComponent<Rigidbody>().IsSleeping())
         {
             safeToPass = true;
+            stopText.text = "GO";
+            stopText.color = Color.green;
         }
     }
 }
