@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -6,21 +7,24 @@ public class Movement : MonoBehaviour
 {
     public float maxSpeed;
     public float rotateSpeed;
-    public Text speedText;
     public Text gearText;
     public Joystick joystick;
     public float breaksForce;
-    //public bool enginStall = true;
+    public float enginebraking;
+    public float acceleration;
+    
 
 
     //gears settings
     private int curentGear = 1;
-    private string[] gearsLabel = {"R", "N", "1", "2", "3", "4", "5", };
-    private int[] gearsSpeed    = { 20,  0 ,  20 , 40,  60,  80,  100 };
+    private string[] gearsLabel = {"R", "N", "1" , "2", "3", "4", "5" ,"S"};
+    private int[] gearsSpeed    = { 20,  0 ,  20 ,  40,  60,  80,  100, 0 };
+    private int[] gearsMinSpeed = { 5 ,  0 ,  5  ,  20,  40,  60,  80 , 0 };
     bool reverse = false;
     private float speed;
     private float horizontalMove;
     private float verticalMove;
+    private bool enginStall = false;
 
 
     public void GearChange (string gear)
@@ -56,25 +60,40 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        //----------------------- replace this to breaking if
+        //StallCheck();
         //horizontalMove = Input.GetAxis("Horizontal");
         //verticalMove   = Input.GetAxis("Vertical");
 
         if (joystick.Vertical * (maxSpeed/10)  > verticalMove)
         {
             //acceleration speed and momentum
-            verticalMove = joystick.Vertical * (maxSpeed / 10);
+            //verticalMove = joystick.Vertical * (maxSpeed / 10) ;
+
+            if (verticalMove < joystick.Vertical * (maxSpeed / 10))
+            {
+                verticalMove += (joystick.Vertical * (maxSpeed / 10) * acceleration/100)/10;
+            }
         }
         else if ((joystick.Vertical<0) && (speed>=0))
         {
             //breaks
             verticalMove -= -joystick.Vertical * breaksForce * Time.deltaTime;
         }
+        else //Engine braking
+        {
+            if (speed > gearsMinSpeed[curentGear])
+            {
+                verticalMove -= enginebraking / 1000;
+                //print(verticalMove);
+            }
+            
+        }
         
         horizontalMove = joystick.Horizontal * verticalMove * rotateSpeed;
 
 
         speed = verticalMove*10;
-        speedText.text = speed.ToString("n2");
 
         
         //acceleration action
@@ -84,11 +103,36 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            transform.Translate(0f, 0f, verticalMove * Time.deltaTime);
+            transform.Translate(0f, 0f, verticalMove * Time.deltaTime );
         }
         
 
         //rotation action
         transform.Rotate(0f, horizontalMove * Time.deltaTime,  0f);
+    }
+
+    private void StallCheck()
+    {
+        //if stall
+        if ((speed < gearsMinSpeed[curentGear] + 10) && (enginStall == false))
+        { 
+            curentGear = 8;
+            GearChange("Down");
+            print("stall");
+            enginStall = true;
+            shake();
+        }
+    }
+
+    private void shake()
+    {
+        // need to add qhake animation
+        verticalMove = 0;
+        enginStall = false;
+    }
+
+    public float getSpeed()
+    {
+        return speed;
     }
 }
