@@ -12,7 +12,8 @@ public class Movement : MonoBehaviour
     public float breaksForce;
     public float enginebraking;
     public float acceleration;
-    
+    public int StallLimite;
+
 
 
     //gears settings
@@ -79,6 +80,7 @@ public class Movement : MonoBehaviour
         {
             //breaks
             verticalMove -= -joystick.Vertical * breaksForce * Time.deltaTime;
+            StallCheck();
         }
         else //Engine braking
         {
@@ -86,8 +88,7 @@ public class Movement : MonoBehaviour
             {
                 verticalMove -= enginebraking / 1000;
                 //print(verticalMove);
-            }
-            
+            } 
         }
         
         horizontalMove = joystick.Horizontal * verticalMove * rotateSpeed;
@@ -113,20 +114,23 @@ public class Movement : MonoBehaviour
 
     private void StallCheck()
     {
-        //if stall
-        if ((speed < gearsMinSpeed[curentGear] + 10) && (enginStall == false))
-        { 
+        //if stall 
+        //the car stall if the speed of the car is - the gear min speed + a thresh hold (StallLimite)
+        if ( ( (speed + StallLimite) < gearsMinSpeed[curentGear]) && (enginStall == false) )
+        {
             curentGear = 8;
             GearChange("Down");
             print("stall");
             enginStall = true;
-            shake();
+            shake(); 
         }
     }
 
     private void shake()
     {
         // need to add qhake animation
+
+        //stop the car for now
         verticalMove = 0;
         enginStall = false;
     }

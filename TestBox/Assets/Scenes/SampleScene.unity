@@ -7806,6 +7806,11 @@ PrefabInstance:
       propertyPath: acceleration
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 753588690768140663, guid: a3c1da5b21827e545b45cb0f2138a046,
+        type: 3}
+      propertyPath: StallLimite
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 753588690768140680, guid: a3c1da5b21827e545b45cb0f2138a046,
         type: 3}
       propertyPath: m_Drag
