@@ -18,9 +18,9 @@ public class Movement : MonoBehaviour
 
     //gears settings
     private int curentGear = 1;
-    private string[] gearsLabel = {"R", "N", "1" , "2", "3", "4", "5" ,"S"};
-    private int[] gearsSpeed    = { 20,  0 ,  20 ,  40,  60,  80,  100, 0 };
-    private int[] gearsMinSpeed = { 5 ,  0 ,  5  ,  20,  40,  60,  80 , 0 };
+    private string[] gearsLabel = {"R", "N", "1" , "2", "3", "4", "5" };
+    private int[] gearsSpeed    = { 20,  0 ,  20 ,  40,  60,  80,  100};
+    private int[] gearsMinSpeed = { 5 ,  0 ,  5  ,  20,  40,  60,  80 };
     bool reverse = false;
     private float speed;
     private float horizontalMove;
@@ -28,49 +28,18 @@ public class Movement : MonoBehaviour
     private bool enginStall = false;
 
 
-    public void GearChange (string gear)
-    {
-        // change the 6 to 5
-        if ((gear == "Up") && (curentGear < 6))
-        {
-            if (curentGear == 1)
-            {
-                reverse = false;
-            }
-            curentGear++;
-            maxSpeed = gearsSpeed[curentGear];
-            gearText.text = gearsLabel[curentGear];
-        }
-        else if ((gear == "Down") && (curentGear>0) )
-        {
-            curentGear--;
-            if (curentGear == 0)
-            {
-                reverse = true;
-            }
-            maxSpeed = gearsSpeed[curentGear];
-            gearText.text = gearsLabel[curentGear];
-        }
-        else
-        {
-            // 5 gear is not allowed
-            //SceneManager.LoadScene("SampleScene");
-        }
-    }
+    
 
 
     void Update()
     {
-        //----------------------- replace this to breaking if
-        //StallCheck();
+        //inout from keyboard
         //horizontalMove = Input.GetAxis("Horizontal");
         //verticalMove   = Input.GetAxis("Vertical");
 
         if (joystick.Vertical * (maxSpeed/10)  > verticalMove)
         {
             //acceleration speed and momentum
-            //verticalMove = joystick.Vertical * (maxSpeed / 10) ;
-
             if (verticalMove < joystick.Vertical * (maxSpeed / 10))
             {
                 verticalMove += (joystick.Vertical * (maxSpeed / 10) * acceleration/100)/10;
@@ -112,17 +81,48 @@ public class Movement : MonoBehaviour
         transform.Rotate(0f, horizontalMove * Time.deltaTime,  0f);
     }
 
+    public void GearChange(string gear)
+    {
+        // change the 6 to 5
+        if ((gear == "Up") && (curentGear < 6))
+        {
+            if (curentGear == 1)
+            {
+                reverse = false;
+            }
+            curentGear++;
+            maxSpeed = gearsSpeed[curentGear];
+            gearText.text = gearsLabel[curentGear];
+        }
+        else if ((gear == "Down") && (curentGear > 0))
+        {
+            curentGear--;
+            if (curentGear == 0)
+            {
+                reverse = true;
+            }
+            maxSpeed = gearsSpeed[curentGear];
+            gearText.text = gearsLabel[curentGear];
+        }
+        else
+        {
+            // 5 gear is not allowed
+            //SceneManager.LoadScene("SampleScene");
+        }
+    }
+
     private void StallCheck()
     {
         //if stall 
         //the car stall if the speed of the car is - the gear min speed + a thresh hold (StallLimite)
-        if ( ( (speed + StallLimite) < gearsMinSpeed[curentGear]) && (enginStall == false) )
+        //curentGear != 2 so the car dont stall in the first gear
+        if ( ( (speed + StallLimite) < gearsMinSpeed[curentGear]) && (enginStall == false) && (curentGear != 2))
         {
-            curentGear = 8;
+            curentGear = 2;
             GearChange("Down");
             print("stall");
             enginStall = true;
-            shake(); 
+            shake();
         }
     }
 
@@ -132,7 +132,8 @@ public class Movement : MonoBehaviour
 
         //stop the car for now
         verticalMove = 0;
-        enginStall = false;
+
+        //enginStall = false;
     }
 
     public float getSpeed()
