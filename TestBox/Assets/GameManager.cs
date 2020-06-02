@@ -12,15 +12,18 @@ public class GameManager : MonoBehaviour
     public Question[] Questions;
 
     private static List<Question> unansweredQuestion;
+
+    [SerializeField]
+
     private static int faultsNumber = 0;
 
    private Question curentQuestion;
 
     [SerializeField]
-    private Text curenQuestionText;
+    private Text curenQuestionText = null;
 
     [SerializeField]
-    private RawImage curenQuestionTexture;
+    private RawImage curenQuestionTexture = null;
 
     [SerializeField]
     private float timeBetweenQuestion = 1f;
@@ -28,7 +31,12 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (Screen.orientation != ScreenOrientation.Portrait)
+        {
+            Screen.orientation = ScreenOrientation.Portrait;
+        }
         
+
         if ((unansweredQuestion == null) || (unansweredQuestion.Count == 0))
         {
             unansweredQuestion = Questions.ToList<Question>();

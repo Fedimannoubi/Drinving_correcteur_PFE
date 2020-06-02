@@ -13,7 +13,7 @@ public class Movement : MonoBehaviour
     public float enginebraking;
     public float acceleration;
     public int StallLimite;
-
+    public float stopLimite;
 
 
     //gears settings
@@ -28,15 +28,25 @@ public class Movement : MonoBehaviour
     private bool enginStall = false;
 
 
-    
+    private bool carIsMoving = false;
 
 
     void Update()
     {
+        if ((verticalMove == 0 ) && (carIsMoving== true))
+        {
+            carIsMoving = false;
+            print("car stoped");
+        }
+        if ((verticalMove != 0) && (carIsMoving == false))
+        {
+            carIsMoving = true;
+            print("car moving");
+        }
         //inout from keyboard
         //horizontalMove = Input.GetAxis("Horizontal");
         //verticalMove   = Input.GetAxis("Vertical");
-
+        StallCheck();
         if (joystick.Vertical * (maxSpeed/10)  > verticalMove)
         {
             //acceleration speed and momentum
@@ -45,11 +55,22 @@ public class Movement : MonoBehaviour
                 verticalMove += (joystick.Vertical * (maxSpeed / 10) * acceleration/100)/10;
             }
         }
-        else if ((joystick.Vertical<0) && (speed>=0))
+        else if ((joystick.Vertical<0) && (speed > 0) && (carIsMoving == true))
         {
-            //breaks
-            verticalMove -= -joystick.Vertical * breaksForce * Time.deltaTime;
-            StallCheck();
+            if (speed < stopLimite)
+            {
+                verticalMove = 0;
+                //carIsMoving = false;
+                //print("speed"+speed);
+            }
+            else
+            {
+                //breaks
+                verticalMove -= -joystick.Vertical * breaksForce * Time.deltaTime;
+                //verticalMove = 0;
+                //StallCheck();
+            }
+            //print(verticalMove + "+" + speed);
         }
         else //Engine braking
         {
@@ -62,10 +83,10 @@ public class Movement : MonoBehaviour
         
         horizontalMove = joystick.Horizontal * verticalMove * rotateSpeed;
 
-
-        speed = verticalMove*10;
-
+        // round the vertical move with 2 decimal 
+        speed = (float)Math.Round(verticalMove * 100f) / 100f * 10;
         
+
         //acceleration action
         if (reverse)
         {
@@ -88,6 +109,7 @@ public class Movement : MonoBehaviour
         {
             if (curentGear == 1)
             {
+                enginStall = false;
                 reverse = false;
             }
             curentGear++;
@@ -113,16 +135,18 @@ public class Movement : MonoBehaviour
 
     private void StallCheck()
     {
+        
         //if stall 
         //the car stall if the speed of the car is - the gear min speed + a thresh hold (StallLimite)
         //curentGear != 2 so the car dont stall in the first gear
-        if ( ( (speed + StallLimite) < gearsMinSpeed[curentGear]) && (enginStall == false) && (curentGear != 2))
+        if ( ( (speed + StallLimite) < gearsMinSpeed[curentGear]) && (enginStall == false) && (curentGear != 2) && (carIsMoving == true))
         {
             curentGear = 2;
             GearChange("Down");
             print("stall");
             enginStall = true;
             shake();
+
         }
     }
 
@@ -139,5 +163,10 @@ public class Movement : MonoBehaviour
     public float getSpeed()
     {
         return speed;
+    }
+
+    public bool getCarIsMoving()
+    {
+        return carIsMoving;
     }
 }

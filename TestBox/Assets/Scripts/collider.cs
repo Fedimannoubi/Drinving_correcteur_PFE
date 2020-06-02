@@ -97,11 +97,16 @@ public class collider : MonoBehaviour
 
         //After we have waited 5 seconds print the time again.
         Debug.Log("Finished timestamp");
+        //or call getCarIsSleep
         if (gameObject.GetComponent<Rigidbody>().IsSleeping())
         {
             safeToPass = true;
             stopText.text = "GO";
             stopText.color = Color.green;
+        }
+        else
+        {
+            Debug.Log("moving");
         }
     }
 }
