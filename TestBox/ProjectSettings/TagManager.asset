@@ -9,6 +9,7 @@ TagManager:
   - Green
   - WaitZone
   - StopLine
+  - RoadMark
   layers:
   - Default
   - TransparentFX

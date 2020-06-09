@@ -72,6 +72,10 @@ public class collider : MonoBehaviour
                     stopText.color = Color.red;
                 }
                 break;
+            case "RoadMark":
+                print("RoadMark");
+                //ChangeNextMark();
+                break;
 
         }
 
@@ -81,6 +85,8 @@ public class collider : MonoBehaviour
     		SceneManager.LoadScene("SampleScene");
         }
     }
+
+   
 
     private void Subtract(Text givingText,int score)
     {
@@ -108,5 +114,10 @@ public class collider : MonoBehaviour
         {
             Debug.Log("moving");
         }
+    }
+
+    private void ChangeNextMark()
+    {
+
     }
 }

@@ -9,6 +9,20 @@ public class Question
  
     public string question;
     public int answer;
+    public string type;
 
+    /*
+     *  
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     */
 
 }
